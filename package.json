@@ -1,0 +1,11 @@
+{
+  "dependencies": {
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "uuid": "^14.0.1"
+  },
+  "scripts": {
+    "dev": "node --watch ./server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}
