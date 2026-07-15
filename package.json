@@ -6,6 +6,24 @@
   },
   "scripts": {
     "dev": "node --watch ./server.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
-  }
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "name": "zelimpeza",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DevAlvesGG/e-commerce_zelimpeza.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/DevAlvesGG/e-commerce_zelimpeza/issues"
+  },
+  "homepage": "https://github.com/DevAlvesGG/e-commerce_zelimpeza#readme"
 }
