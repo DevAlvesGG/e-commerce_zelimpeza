@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@prisma/client": "^6.19.3",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "uuid": "^14.0.1"
@@ -13,7 +14,6 @@
   "version": "1.0.0",
   "description": "",
   "main": "server.js",
-  "devDependencies": {},
   "repository": {
     "type": "git",
     "url": "git+https://github.com/DevAlvesGG/e-commerce_zelimpeza.git"
@@ -25,5 +25,8 @@
   "bugs": {
     "url": "https://github.com/DevAlvesGG/e-commerce_zelimpeza/issues"
   },
-  "homepage": "https://github.com/DevAlvesGG/e-commerce_zelimpeza#readme"
+  "homepage": "https://github.com/DevAlvesGG/e-commerce_zelimpeza#readme",
+  "devDependencies": {
+    "prisma": "^6.19.3"
+  }
 }
