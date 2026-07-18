@@ -1,5 +1,4 @@
-const welcomeRoutes = require('./welcomeRoutes.js');
-
+const authRoutes = require('./authRoutes.js');
 module.exports = app => {
-    app.use(welcomeRoutes);
+    app.use('/api/auth', authRoutes);
 }
