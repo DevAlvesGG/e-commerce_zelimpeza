@@ -3,6 +3,9 @@ const routes = Router();
 const productController = require('../controllers/productController');
 const authMiddleware = require('../middleware/authMiddleware');
 const adminMiddleware = require('../middleware/adminMiddleware');
+const validate = require('../middleware/validate');
+
+const { createProductSchema } = require('../schemas/productSchema');
 
 
 // Rotas públicas
@@ -10,7 +13,7 @@ const adminMiddleware = require('../middleware/adminMiddleware');
     routes.get('/:id', productController.getOneProduct);// rota para selecionar um produto
 
 // Rota privada — só admin autenticado pode cadastrar produto
-    routes.post('/', authMiddleware, adminMiddleware, productController.createProduct);// rota para criar um produto
+    routes.post('/', authMiddleware, adminMiddleware, validate(createProductSchema) ,productController.createProduct);// rota para criar um produto
 
 
 module.exports = routes;

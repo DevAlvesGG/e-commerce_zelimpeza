@@ -1,13 +1,14 @@
 {
   "dependencies": {
-    "@prisma/client": "^6.19.3",
+    "@prisma/client": "6.4.0",
     "bcryptjs": "^3.0.3",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "helmet": "^8.3.0",
     "jsonwebtoken": "^9.0.3",
-    "uuid": "^14.0.1"
+    "uuid": "^14.0.1",
+    "zod": "^4.6.5"
   },
   "scripts": {
     "dev": "node --watch ./server.js",
@@ -31,6 +32,17 @@
   },
   "homepage": "https://github.com/DevAlvesGG/e-commerce_zelimpeza#readme",
   "devDependencies": {
-    "prisma": "^6.19.3"
+    "prisma": "6.4.0"
+  },
+  "overrides": {
+    "lodash": "^4.17.23",
+    "valibot": "^1.4.2",
+    "@hono/node-server": "^1.19.15",
+    "hono": "^4.13.5"
+  },
+  "allowScripts": {
+    "esbuild@0.28.2": true,
+    "msgpackr-extract@3.0.4": true,
+    "workerd@1.20260704.1": true
   }
 }
