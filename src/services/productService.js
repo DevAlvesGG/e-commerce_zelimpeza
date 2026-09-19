@@ -7,9 +7,9 @@ async function listAll() {
 
 //function para pegar produtos por id
 async function getById(id) {
-    const product = prisma.product.findUnique({ where: { id: Number(id) }}) //findUnique() - para localizar um unico dado de product
+    const product = await prisma.product.findUnique({ where: { id: Number(id) }}) //findUnique() - para localizar um unico dado de product
     if(!product) {
-        const error = new Error('Produto não encontrado');
+        const error = new Error('Produto não encontrado.');
         error.statusCode = 404;
         throw error;
     }
