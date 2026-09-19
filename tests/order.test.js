@@ -136,4 +136,34 @@ describe('Pedidos (/api/orders)', () => {
       expect(response.body).toEqual([]); // o outro usuário não deve ver o pedido do primeiro
     });
   });
+
+    describe('Concorrência no Checkout (race condition)', () => {
+    it('deve permitir apenas UMA compra bem-sucedida quando duas requisições simultâneas disputam a última unidade em estoque', async () => {
+        // Produto com apenas 1 unidade — o "prêmio" que os dois clientes vão disputar
+        const scarceProduct = await prisma.product.create({
+        data: { name: 'Produto Escasso', price: 100, stockQuantity: 1 },
+        });
+
+        // Dois clientes diferentes, tentando comprar a mesma unidade ao mesmo tempo
+        const { token: tokenA } = await createUserAndLogin({ email: 'clienteA@teste.com', role: 'client' });
+        const { token: tokenB } = await createUserAndLogin({ email: 'clienteB@teste.com', role: 'client' });
+
+        const checkoutPayload = { items: [{ productId: scarceProduct.id, quantity: 1 }] };
+
+        // Promise.all dispara as duas requisições "ao mesmo tempo", sem esperar uma terminar
+        const [responseA, responseB] = await Promise.all([
+        request(app).post('/api/orders').set('Authorization', `Bearer ${tokenA}`).send(checkoutPayload),
+        request(app).post('/api/orders').set('Authorization', `Bearer ${tokenB}`).send(checkoutPayload),
+        ]);
+
+        const statuses = [responseA.status, responseB.status].sort();
+
+        // Uma das duas deve ter sucesso (201), a outra deve falhar por estoque insuficiente (409)
+        expect(statuses).toEqual([201, 409]);
+
+        // Prova definitiva: o estoque final deve ser 0, NUNCA negativo
+        const finalProduct = await prisma.product.findUnique({ where: { id: scarceProduct.id } });
+        expect(finalProduct.stockQuantity).toBe(0);
+    });
+    });
 });
