@@ -40,4 +40,10 @@ function logout(req, res) {
     return res.status(200).json({ message: 'Logout realizado com sucesso.'})
 }
 
-module.exports = { register, login, logout };
+function me(req, res) {
+   // req.user já foi populado pelo authMiddleware, a partir do cookie validado
+   return res.status(200).json({ user: req.user });
+
+}
+
+module.exports = { register, login, logout, me };
