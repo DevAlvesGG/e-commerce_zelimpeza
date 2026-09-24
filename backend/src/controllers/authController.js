@@ -18,17 +18,26 @@ async function register(req, res , next) {
 async function login(req, res, next) {
     try {
         const { email, password } = req.body;
-        
-        if(!email || !password) {
-            return res.status(400).json({ message: 'E-mail e senha são obrigatórios.' })
-        }
 
-        const result = await authService.login({ email, password });
-        return res.status(200).json(result);
+        const { token, user } = await authService.login({ email, password })
+
+        res.cookie('token', token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production', // HTTPS obrigatório em produção
+            sameSite: 'lax',
+            maxAge: 24 * 60 * 60 * 1000, // 1 dia, em milissegundos
+        })
+
+        return res.status(200).json({ user })
 
     }catch (error) {
         next(error);
     }
 }
 
-module.exports = { register, login };
+function logout(req, res) {
+    res.clearCookie('token');
+    return res.status(200).json({ message: 'Logout realizado com sucesso.'})
+}
+
+module.exports = { register, login, logout };

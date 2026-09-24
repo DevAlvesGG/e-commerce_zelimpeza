@@ -74,8 +74,9 @@ describe('Autenticação (/api/auth)', () => {
       });
 
       expect(response.status).toBe(200);
-      expect(response.body).toHaveProperty('token');
-      expect(typeof response.body.token).toBe('string');
+      expect(response.body).toHaveProperty('user');
++     expect(response.headers['set-cookie']).toBeDefined();
+
     });
 
     it('deve rejeitar login com senha incorreta', async () => {

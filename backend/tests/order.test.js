@@ -5,16 +5,15 @@ const cleanDatabase = require('./helpers/cleanDatabase');
 const createUserAndLogin = require('./helpers/createUserAndLogin');
 
 describe('Pedidos (/api/orders)', () => {
-  let clientToken;
+  let clientCookie;
   let product;
 
   beforeEach(async () => {
     await cleanDatabase();
 
-    // Usuário client para todos os testes de checkout
-    const { token } = await createUserAndLogin({ email: 'cliente@teste.com', role: 'client' });
-    clientToken = token;
-
+    const { cookie } = await createUserAndLogin({ email: 'cliente@teste.com' })
+    clientCookie = cookie;
+ 
     // Produto base com estoque conhecido
     product = await prisma.product.create({
       data: { name: 'Produto Checkout', price: 50, stockQuantity: 5 },
@@ -37,7 +36,7 @@ describe('Pedidos (/api/orders)', () => {
     it('deve rejeitar carrinho vazio', async () => {
       const response = await request(app)
         .post('/api/orders')
-        .set('Authorization', `Bearer ${clientToken}`)
+        .set('Cookie', clientCookie)
         .send({ items: [] });
 
       expect(response.status).toBe(400);
@@ -46,7 +45,7 @@ describe('Pedidos (/api/orders)', () => {
     it('deve rejeitar checkout de produto inexistente', async () => {
       const response = await request(app)
         .post('/api/orders')
-        .set('Authorization', `Bearer ${clientToken}`)
+        .set('Cookie', clientCookie)
         .send({ items: [{ productId: 999999, quantity: 1 }] });
 
       expect(response.status).toBe(404);
@@ -55,7 +54,7 @@ describe('Pedidos (/api/orders)', () => {
     it('deve realizar checkout com sucesso e debitar o estoque', async () => {
       const response = await request(app)
         .post('/api/orders')
-        .set('Authorization', `Bearer ${clientToken}`)
+        .set('Cookie', clientCookie)
         .send({ items: [{ productId: product.id, quantity: 2 }] });
 
       expect(response.status).toBe(201);
@@ -72,7 +71,7 @@ describe('Pedidos (/api/orders)', () => {
     it('deve rejeitar checkout com estoque insuficiente e NÃO alterar o estoque (rollback)', async () => {
       const response = await request(app)
         .post('/api/orders')
-        .set('Authorization', `Bearer ${clientToken}`)
+        .set('Cookie', clientCookie)
         .send({ items: [{ productId: product.id, quantity: 9999 }] });
 
       expect(response.status).toBe(409);
@@ -89,7 +88,7 @@ describe('Pedidos (/api/orders)', () => {
 
       const response = await request(app)
         .post('/api/orders')
-        .set('Authorization', `Bearer ${clientToken}`)
+        .set('Cookie', clientCookie)
         .send({
           items: [
             { productId: product.id, quantity: 1 },      // 1 x 50 = 50
@@ -112,7 +111,7 @@ describe('Pedidos (/api/orders)', () => {
     it('deve retornar lista vazia quando o usuário não tem pedidos', async () => {
       const response = await request(app)
         .get('/api/orders/my-orders')
-        .set('Authorization', `Bearer ${clientToken}`);
+        .set('Cookie', clientCookie)
 
       expect(response.status).toBe(200);
       expect(response.body).toEqual([]);
@@ -122,15 +121,15 @@ describe('Pedidos (/api/orders)', () => {
       // Pedido do cliente principal
       await request(app)
         .post('/api/orders')
-        .set('Authorization', `Bearer ${clientToken}`)
+        .set('Cookie', clientCookie)
         .send({ items: [{ productId: product.id, quantity: 1 }] });
 
       // Um segundo usuário, sem pedidos
-      const { token: otherToken } = await createUserAndLogin({ email: 'outro@teste.com', role: 'client' });
+      const { cookie: otherCookie } = await createUserAndLogin({ email: 'outro@teste.com', role: 'client' });
 
       const response = await request(app)
         .get('/api/orders/my-orders')
-        .set('Authorization', `Bearer ${otherToken}`);
+        .set('Cookie', otherCookie);
 
       expect(response.status).toBe(200);
       expect(response.body).toEqual([]); // o outro usuário não deve ver o pedido do primeiro
@@ -145,15 +144,15 @@ describe('Pedidos (/api/orders)', () => {
         });
 
         // Dois clientes diferentes, tentando comprar a mesma unidade ao mesmo tempo
-        const { token: tokenA } = await createUserAndLogin({ email: 'clienteA@teste.com', role: 'client' });
-        const { token: tokenB } = await createUserAndLogin({ email: 'clienteB@teste.com', role: 'client' });
+        const { cookie: cookieA } = await createUserAndLogin({ email: 'clienteA@teste.com', role: 'client' });
+        const { cookie: cookieB } = await createUserAndLogin({ email: 'clienteB@teste.com', role: 'client' });
 
         const checkoutPayload = { items: [{ productId: scarceProduct.id, quantity: 1 }] };
 
         // Promise.all dispara as duas requisições "ao mesmo tempo", sem esperar uma terminar
         const [responseA, responseB] = await Promise.all([
-        request(app).post('/api/orders').set('Authorization', `Bearer ${tokenA}`).send(checkoutPayload),
-        request(app).post('/api/orders').set('Authorization', `Bearer ${tokenB}`).send(checkoutPayload),
+        request(app).post('/api/orders').set('Cookie', cookieA).send(checkoutPayload),
+        request(app).post('/api/orders').set('Cookie', cookieB).send(checkoutPayload),
         ]);
 
         const statuses = [responseA.status, responseB.status].sort();

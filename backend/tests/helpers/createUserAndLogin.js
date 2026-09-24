@@ -15,8 +15,9 @@ async function createUserAndLogin({ name = 'Usuário Teste', email, password = '
   });
 
   const loginResponse = await request(app).post('/api/auth/login').send({ email, password });
+  const cookie = loginResponse.headers['set-cookie'];
 
-  return { user, token: loginResponse.body.token };
+  return { user, cookie };
 }
 
 module.exports = createUserAndLogin;

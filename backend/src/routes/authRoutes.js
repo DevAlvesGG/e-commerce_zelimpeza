@@ -6,5 +6,6 @@ const { registerSchema, loginSchema } = require('../schemas/authSchema');
 
 routes.post('/register', validate(registerSchema), authController.register);
 routes.post('/login', validate(loginSchema), authController.login);
+routes.post('/logout', authController.logout)
 
 module.exports = routes;

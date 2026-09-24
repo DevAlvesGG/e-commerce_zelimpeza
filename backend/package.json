@@ -2,6 +2,7 @@
   "dependencies": {
     "@prisma/client": "6.4.0",
     "bcryptjs": "^3.0.3",
+    "cookie-parser": "^1.4.7",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
@@ -12,9 +13,8 @@
   },
   "scripts": {
     "dev": "node --watch ./server.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js",
-    "test": "cross-env NODE_ENV=test dotenv -e .env.test -- jest --runInBand"
+    "test": "cross-env NODE_ENV=test dotenv -e .env.test -- jest --runInBand",
+    "start": "node server.js"
   },
   "name": "zelimpeza",
   "version": "1.0.0",

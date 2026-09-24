@@ -67,22 +67,22 @@ describe('Produtos (/api/products)', () => {
     });
 
     it('deve rejeitar criação de usuário client (sem permissão)', async () => {
-      const { token } = await createUserAndLogin({ email: 'client@teste.com', role: 'client' });
+      const { cookie } = await createUserAndLogin({ email: 'client@teste.com', role: 'client' });
 
       const response = await request(app)
         .post('/api/products')
-        .set('Authorization', `Bearer ${token}`)
+        .set('Cookie', cookie)
         .send({ name: 'Produto Client', price: 10 });
 
       expect(response.status).toBe(403);
     });
 
     it('deve criar produto com sucesso quando admin', async () => {
-      const { token } = await createUserAndLogin({ email: 'admin@teste.com', role: 'admin' });
+      const { cookie } = await createUserAndLogin({ email: 'client@teste.com', role: 'admin' });
 
       const response = await request(app)
         .post('/api/products')
-        .set('Authorization', `Bearer ${token}`)
+        .set('Cookie', cookie)
         .send({
           name: 'Produto Admin',
           description: 'Criado via teste',
@@ -96,11 +96,11 @@ describe('Produtos (/api/products)', () => {
     });
 
     it('deve rejeitar payload com campo desconhecido (proteção Zod)', async () => {
-      const { token } = await createUserAndLogin({ email: 'admin2@teste.com', role: 'admin' });
+      const { cookie } = await createUserAndLogin({ email: 'client@teste.com', role: 'admin' });
 
       const response = await request(app)
         .post('/api/products')
-        .set('Authorization', `Bearer ${token}`)
+        .set('Cookie', cookie)
         .send({
           name: 'Produto Errado',
           price: 10,
@@ -111,11 +111,11 @@ describe('Produtos (/api/products)', () => {
     });
 
     it('deve rejeitar preço negativo', async () => {
-      const { token } = await createUserAndLogin({ email: 'admin3@teste.com', role: 'admin' });
+      const { cookie } = await createUserAndLogin({ email: 'client@teste.com', role: 'admin' });
 
       const response = await request(app)
         .post('/api/products')
-        .set('Authorization', `Bearer ${token}`)
+        .set('Cookie', cookie)
         .send({ name: 'Produto Preço Inválido', price: -10 });
 
       expect(response.status).toBe(400);
